@@ -91,17 +91,9 @@
                                     your website’s content and functionality.
                                 </p>
                                 <div class="blog-tags">
-                                    <div class="tag">Tag content</div>
-                                    <div class="tag">Tag content</div>
-                                    <div class="tag">Tag content</div>
-                                    <div class="tag">Tag content</div>
-                                    <div class="tag">Tag content</div>
-                                    <div class="tag">Tag content</div>
-                                    <div class="tag">Tag content</div>
-                                    <div class="tag">Tag content</div>
-                                    <div class="tag">Tag content</div>
-                                    <div class="tag">Tag content</div>
-                                    <div class="tag">Tag content</div>
+                                    {% for tag in post.tag.all %}
+                                        <div class="tag">{{tag.name}}</div>
+                                    {% endfor %}
                                 </div>
                                 <div class="social-share">
                                     <div class="reactions">
@@ -319,12 +311,20 @@
                                 Your email address will not be published. Required fields
                                 are marked<span>*</span>
                             </p>
-                            <form action="">
-                                <textarea placeholder="Type your comment...."></textarea>
+                            <form method="POST">
+                                {% csrf_token %}
+                                {{comment_form.content}}
+                                {% comment %} <textarea placeholder="Type your comment...."></textarea> {% endcomment %}
                                 <div class="grid-3">
-                                    <input type="text" placeholder="Name" />
-                                    <input type="temail" placeholder="Email" />
-                                    <input type="url" placeholder="Website (optional)" />
+                                    {{comment_form.name}}
+                                    {% comment %} <input type="text" placeholder="Name" /> {% endcomment %}
+                                    {{comment_form.email}}
+                                    {% comment %} <input type="temail" placeholder="Email" /> {% endcomment %}
+                                    {{comment_form.website}}
+                                    {% comment %} <input type="url" placeholder="Website (optional)" /> {% endcomment %}
+                                    
+                                    {% comment %} Adding this below input to get the post id easily in views.py {% endcomment %}
+                                    <input type="hidden" name="post_id" value="{{post.id}}">
                                 </div>
                                 <button class="btn btn-primary rounded">
                                     Post comment
