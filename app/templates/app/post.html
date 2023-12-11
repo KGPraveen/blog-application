@@ -151,24 +151,26 @@
                                                         are marked<span>*</span>
                                                     </p>
                                                     <form method="POST">
-                                                        <textarea name="content" cols="40" rows="10"
-                                                            placeholder="Type your comment...." required
-                                                            id="id_content"></textarea>
-                                                        <div class="grid-3">
-                                                            <input type="text" name="name" maxlength="200"
-                                                                placeholder="Name" required id="id_name">
-                                                            <input type="text" name="email" maxlength="200"
-                                                                placeholder="Email" required id="id_email">
-                                                            <input type="text" name="website" maxlength="200"
-                                                                placeholder="Website" id="id_website">
-                                                        </div>
+                                                        {% csrf_token %}
+                                                        <!-- ============================================================ -->
+                                                        <!-- post works because we define it in context in views.py -->
+                                                        <input type="hidden" name="post" value="{{post.id}}">
+                                                        <!-- ============================================================ -->
+                                                        <!-- comment.id works because this form is within the for loop: -->
+                                                        <input type="hidden" name="parent_id" value="{{comment.id}}">
+                                                        <!-- ============================================================ -->
 
-                                                        <button class="btn btn-primary rounded">
+                                                        {{comment_form.content}}
+                                                        <div class="grid-3">
+                                                            {{comment_form.name}}
+                                                            {{comment_form.email}}
+                                                            {{comment_form.website}}
+                                                        </div>
+                                                        <button type="submit" class="btn btn-primary rounded">
                                                             Post Reply
                                                         </button>
                                                     </form>
                                                 </div>
-
                                             </div>
 
                                             <div class="public-reply">
