@@ -41,6 +41,9 @@ class Comment(models.Model):
     author = models.ForeignKey(
         User, on_delete=models.CASCADE, null=True, blank=True
     )
+    parent = models.ForeignKey(
+        'self', on_delete=models.DO_NOTHING, blank=True, null=True
+    )
 
     def __str__(self):
         return f"Comment by {self.name} on {self.post}"
