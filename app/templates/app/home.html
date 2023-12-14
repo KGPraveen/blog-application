@@ -65,12 +65,12 @@
         <div class="grid-3">
 
             <!-- card -->
-            {% for post in posts %}
+            {% for post in top_posts %}
             <a href="#">
                 <div class="card">
                     <div class="post-img">
                         <img src="{{post.image.url}}" alt="" />
-                        <div class="tag">Tag name</div>
+                        <div class="tag">{{post.tag.all.0}}</div>
                     </div>
                     <div class="card-content">
                         <h3>
@@ -107,12 +107,12 @@
         <div class="grid-3">
 
             <!-- card -->
-            {% for post in posts %}
+            {% for post in recent_posts %}
             <a href="#">
                 <div class="card">
                     <div class="post-img">
                         <img src="{{post.image.url}}" alt="" />
-                        <div class="tag">Tag name</div>
+                        <div class="tag">{{post.tag.all.0}}</div>
                     </div>
                     <div class="card-content">
                         <h3>

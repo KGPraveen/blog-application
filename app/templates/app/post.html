@@ -30,7 +30,7 @@
                             </div>
                             <div class="track">
                                 <i class="uil uil-users-alt"></i>
-                                <p class="view-count">2500+ views</p>
+                                <p class="view-count">{{post.view}} views</p>
                             </div>
                             <div class="track">
                                 <form action="" method="POST">
@@ -127,7 +127,7 @@
                                     <div class="user-comment">
                                         <div class="author">
                                             <div class="profile-pic">
-                                                <img src="../images/author.svg" alt="" />
+                                                <img src="{% static "app/images/author.svg" %}" alt="" />
                                             </div>
                                             <div class="details">
                                                 <p>{{comment.name}}</p>
@@ -173,25 +173,27 @@
                                                 </div>
                                             </div>
 
-                                            <div class="public-reply">
-                                                <div class="author">
-                                                    <div class="profile-pic">
-                                                        <img src="../images/author.svg" alt="" />
+                                            
+                                            <!--=============REPLY BOXES============-->
+                                            {% for reply in comment.replies.all %}
+                                                <div class="public-reply">
+                                                    <div class="author">
+                                                        <div class="profile-pic">
+                                                            <img src="{% static "app/images/author.svg" %}" alt="" />
+                                                        </div>
+                                                        <div class="details">
+                                                            <p>{{reply.name}}</p>
+                                                            <small>{{reply.date | date}}</small>
+                                                        </div>
                                                     </div>
-                                                    <div class="details">
-                                                        <p>Author name</p>
-                                                        <small>June 20, 2022</small>
+                                                    <div class="comment">
+                                                        <p>
+                                                            {{reply.content}}
+                                                        </p>
                                                     </div>
                                                 </div>
-                                                <div class="comment">
-                                                    <p>
-                                                        THIS IS THE REPLY FIELD
-                                                    </p>
-                                                </div>
-                                            </div>
-
-
-
+                                            {% endfor %}
+                                            <!--====================================-->
                                         </div>
                                     </div>
                                 {% endfor %}

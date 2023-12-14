@@ -9,13 +9,27 @@ from django.urls import reverse
 
 def home(request):
     posts = Post.objects.all()
-    context = {'posts': posts}
+    recent_posts = posts.order_by('-date_created')[0:3]
+    top_posts = posts.order_by('-view')[0:3]
+    context = {
+        'posts': posts,
+        'recent_posts': recent_posts,
+        'top_posts': top_posts
+    }
     return render(request, 'app/home.html', context)
 
 
 def post(request, slug):
     post = Post.objects.get(slug=slug)
-    
+
+    # Adding views per post viewd.
+    if (post.view == None):
+        post.view = 1
+        post.save()
+    else:
+        post.view = post.view + 1
+        post.save()
+
     # To ensure that replies are not taken as comments.
     comments = Comment.objects.filter(post=post, parent=None)
     comment_form = CommentForm()

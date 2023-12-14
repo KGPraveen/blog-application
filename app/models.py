@@ -23,9 +23,15 @@ class Post(models.Model):
     title = models.CharField(max_length=200)
     content = models.TextField()
     date_modified = models.DateTimeField(auto_now=True)
+    date_created = models.DateTimeField(auto_now_add=True)
     slug = models.SlugField(max_length=200, unique=True)
     image = models.ImageField(null=True, blank=True, upload_to='images/')
     tag = models.ManyToManyField(Tag, blank=True, related_name='post')
+
+    # RELATED_NAME: with the above line, on Tag, you can say:
+    # "ATagObject.post.all() and get all posts." where 'post' is related name.
+
+    view = models.IntegerField(null = True, blank=True)
 
     def __str__(self):
         return self.title
@@ -42,8 +48,14 @@ class Comment(models.Model):
         User, on_delete=models.CASCADE, null=True, blank=True
     )
     parent = models.ForeignKey(
-        'self', on_delete=models.DO_NOTHING, blank=True, null=True
+        'self', on_delete=models.DO_NOTHING, blank=True, null=True, related_name='replies'
     )
+    # RELATED_NAME: with the above line, on a Comment object,
+    # you can say: "cmt.replies.all()" and get a queryset of all replies.
+    # where 'replies' is related name.
 
     def __str__(self):
-        return f"Comment by {self.name} on {self.post}"
+        if self.parent:
+            return f"Reply by {self.name} to {self.parent.name}"
+        else:
+            return f"Comment by {self.name} on {self.post} post."
