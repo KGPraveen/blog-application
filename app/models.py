@@ -5,6 +5,14 @@ from django.utils.text import slugify
 # Create your models here.
 
 
+class Subscribe(models.Model):
+    email = models.EmailField(max_length=200)
+    date = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.email
+
+
 class Tag(models.Model):
     name = models.CharField(max_length=50)
     description = models.CharField(max_length=100)
@@ -26,12 +34,16 @@ class Post(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
     slug = models.SlugField(max_length=200, unique=True)
     image = models.ImageField(null=True, blank=True, upload_to='images/')
+    is_featured = models.BooleanField(default=False)
+    
+    # =============================================================================
     tag = models.ManyToManyField(Tag, blank=True, related_name='post')
-
+    # =============================================================================
     # RELATED_NAME: with the above line, on Tag, you can say:
     # "ATagObject.post.all() and get all posts." where 'post' is related name.
+    # =============================================================================
 
-    view = models.IntegerField(null = True, blank=True)
+    view = models.IntegerField(null=True, blank=True)
 
     def __str__(self):
         return self.title

@@ -22,41 +22,44 @@
             </div>
             <div class="newsletter">
                 <form method="POST">
-                    <input type="email" name="email" maxlength="100" placeholder="Enter your email" required=""
-                        id="id_email" />
+                    {% csrf_token %}
+                    {{subscribe_form.email}}
                     <button class="btn btn-primary">Subscribe</button>
                 </form>
+                <br>
+                {% if subscribe_successful %}
+                    <p>{{subscribe_successful}}</p>
+                {% endif %}
             </div>
         </center>
     </div>
 </main>
 
 {% comment %} The first Big Post {% endcomment %}
-<section class="sp">
+{% if featured_blog %}
+<section class="sp" style="margin-top: -50px">
     <div class="container">
+        <h1 class="sec-title">Featured</h1>
         <div class="grid-2">
             <div class="post-img">
-                <img src="images/post.png" alt="" />
+                <img src="{{featured_blog.image.url}}" alt="" />
             </div>
             <div class="post-content">
                 <div class="cetagory">
-                    <p>Category name</p>
+                    <p>{{featured_blog.tag.all.0.name}}</p>
                 </div>
                 <h1>
-                    Lorem ipsum began as scrambled, nonsensical Latin derived from
-                    Cicero's 1st-century BC text.
+                    {{featured_blog.title}}
                 </h1>
                 <p class="des">
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Iure
-                    ullam animi repellat non ut delectus culpa! Iste quia corporis
-                    illum doloribus facilis quo totam eveniet sapiente odit
-                    cupiditate? Cumque, nam?
+                    {{featured_blog.content | truncatechars:200}}
                 </p>
-                <a class="learn" href="#">Learn more <span class="material-icons"> trending_flat </span></a>
+                <a class="learn" href="{% url 'post_page' featured_blog.slug %}">Learn more <span class="material-icons"> trending_flat </span></a>
             </div>
         </div>
     </div>
 </section>
+{% endif %}
 
 {% comment %} Top Blogs {% endcomment %}
 <section class="sp">
@@ -66,11 +69,13 @@
 
             <!-- card -->
             {% for post in top_posts %}
-            <a href="#">
+            <a href="{% url 'post_page' post.slug %}">
                 <div class="card">
                     <div class="post-img">
                         <img src="{{post.image.url}}" alt="" />
-                        <div class="tag">{{post.tag.all.0}}</div>
+                        <div class="tag">
+                            {{post.tag.all.0.name}}
+                        </div>
                     </div>
                     <div class="card-content">
                         <h3>
@@ -108,7 +113,7 @@
 
             <!-- card -->
             {% for post in recent_posts %}
-            <a href="#">
+            <a href="{% url 'post_page' post.slug %}">
                 <div class="card">
                     <div class="post-img">
                         <img src="{{post.image.url}}" alt="" />

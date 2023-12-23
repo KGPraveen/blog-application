@@ -1,7 +1,9 @@
+import random
+import secrets
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
-from app.forms import CommentForm
-from app.models import Post, Comment
+from app.forms import CommentForm, SubscribeForm
+from app.models import Post, Comment, Tag
 from django.urls import reverse
 
 # Create your views here.
@@ -11,10 +13,28 @@ def home(request):
     posts = Post.objects.all()
     recent_posts = posts.order_by('-date_created')[0:3]
     top_posts = posts.order_by('-view')[0:3]
+    subscribe_form = SubscribeForm()
+    subscribe_successful = None
+    featured_blogs = Post.objects.filter(is_featured=True)
+    featured_blog = None
+
+    if featured_blogs:
+        featured_blog = secrets.choice(featured_blogs)
+
+    if (request.POST):
+        subscribe_form = SubscribeForm(request.POST)
+        if (subscribe_form.is_valid()):
+            subscribe_form.save()
+            subscribe_form = SubscribeForm()
+            subscribe_successful = "Subscribed Successfully!"
+
     context = {
+        'subscribe_form': subscribe_form,
         'posts': posts,
         'recent_posts': recent_posts,
-        'top_posts': top_posts
+        'top_posts': top_posts,
+        'subscribe_successful': subscribe_successful,
+        'featured_blog': featured_blog,
     }
     return render(request, 'app/home.html', context)
 
@@ -51,6 +71,7 @@ def post(request, slug):
 
                     # parent is obtained through slug (1st line of this function)
                     comment_reply.post = post
+                    comment_reply.save()
                     return HttpResponseRedirect(reverse('post_page', kwargs={'slug': slug}))
             # =======================================================================
 
@@ -87,7 +108,7 @@ def post(request, slug):
     context = {'post': post, 'comment_form': comment_form, 'comments': comments}
     return render(request, 'app/post.html', context)
 
-
+# =============================================================================
 # def post(request, slug):
 #     comment_form = CommentForm()
 #     post = Post.objects.get(slug=slug)
@@ -106,3 +127,28 @@ def post(request, slug):
 
 #     context = {'post': post, 'comment_form': comment_form}
 #     return render(request, 'app/post.html', context)
+# =============================================================================
+
+
+def tag(request, slug):
+    tag = Tag.objects.get(slug=slug)
+    top_posts = Post.objects.filter(tag=tag).order_by('-view')[0:2]
+    more_tags = Tag.objects.all().order_by('?')[0:11]
+    # =====================================================================================
+    # YOU CAN ALSO USE:
+    # =====================================================================================
+    # top_posts = Post.objects.filter(tag__in=tag).order_by('-view')[0:2]
+    # This will also return all posts that have their "tag__in" 'tag'.
+    # *** This is useful because you can use it to get all posts that have "tag__in"
+    # a list of tags.
+    # =====================================================================================
+
+    trending_posts = Post.objects.filter(tag=tag).order_by('view')[0:3]
+
+    context = {
+        'tag': tag,
+        'top_posts': top_posts,
+        'trending_posts': trending_posts,
+        'more_tags': more_tags,
+    }
+    return render(request, 'app/tag.html', context)

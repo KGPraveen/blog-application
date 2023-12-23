@@ -92,7 +92,9 @@
                                 </p>
                                 <div class="blog-tags">
                                     {% for tag in post.tag.all %}
-                                        <div class="tag">{{tag.name}}</div>
+                                        <a href="{% url 'tag_page' tag.slug %}">
+                                            <div class="tag">{{tag.name}}</div>
+                                        </a>
                                     {% endfor %}
                                 </div>
                                 <div class="social-share">

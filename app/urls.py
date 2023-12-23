@@ -3,7 +3,10 @@ from app import views
 
 urlpatterns = [
     path('', views.home, name='home_page'),
-    
+
     # <type:variable>
-    path('post/<slug:slug>', views.post, name='post_page')
+    path('post/<slug:slug>', views.post, name='post_page'),
+
+    # <type:variable>
+    path('tag/<slug:slug>', views.tag, name='tag_page')
 ]
