@@ -4,6 +4,28 @@ from django.utils.text import slugify
 
 # Create your models here.
 
+# =================================================================
+# post1.author.profile.profile_picture -> will automatically
+# give you the profile of the selected user.
+# Django does this automatically. No need for extra adding stuff.
+# =================================================================
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    profile_picture = models.ImageField(
+        upload_to='images/', blank=True, null=True
+    )
+    slug = models.SlugField(max_length=200, unique=True)
+    bio = models.CharField(max_length=200)
+
+    def save(self, *args, **kwargs):
+        if not self.id:
+            self.slug = slugify(self.user.username)
+        return super(Profile, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.user.first_name} {self.user.last_name}'s Profile"
+# =================================================================
+
 
 class Subscribe(models.Model):
     email = models.EmailField(max_length=200)
@@ -35,7 +57,7 @@ class Post(models.Model):
     slug = models.SlugField(max_length=200, unique=True)
     image = models.ImageField(null=True, blank=True, upload_to='images/')
     is_featured = models.BooleanField(default=False)
-    
+
     # =============================================================================
     tag = models.ManyToManyField(Tag, blank=True, related_name='post')
     # =============================================================================
@@ -44,6 +66,14 @@ class Post(models.Model):
     # =============================================================================
 
     view = models.IntegerField(null=True, blank=True)
+
+    # ==============================================================================
+    author = models.ForeignKey(
+        User, on_delete=models.CASCADE, blank=True, null=True, related_name='posts'
+    )
+    # ==============================================================================
+    # Uses the django inbuilt User model that you can see in the admin panel.
+    # ==============================================================================
 
     def __str__(self):
         return self.title

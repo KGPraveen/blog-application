@@ -1,9 +1,10 @@
-import random
 import secrets
+from django.contrib.auth.models import User
+from django.db.models import Q, Count
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from app.forms import CommentForm, SubscribeForm
-from app.models import Post, Comment, Tag
+from app.models import Post, Comment, Profile, Tag
 from django.urls import reverse
 
 # Create your views here.
@@ -133,6 +134,7 @@ def post(request, slug):
 def tag(request, slug):
     tag = Tag.objects.get(slug=slug)
     top_posts = Post.objects.filter(tag=tag).order_by('-view')[0:2]
+    # This ? will sort them randomly.
     more_tags = Tag.objects.all().order_by('?')[0:11]
     # =====================================================================================
     # YOU CAN ALSO USE:
@@ -152,3 +154,54 @@ def tag(request, slug):
         'more_tags': more_tags,
     }
     return render(request, 'app/tag.html', context)
+
+
+def author(request, slug):
+    author_profile = Profile.objects.get(slug=slug)
+    author_posts = Post.objects.filter(author=author_profile.user)
+    other_author_posts = Post.objects.exclude(
+        author=author_profile.user).order_by('?')[0:3]
+
+    top_posts = author_posts.order_by('-view')[0:2]
+    trending_posts = author_posts.order_by('-date_created')[0:3]
+
+    # ==============================================================
+    # Top authors are counted by their total number of posts
+    # ==============================================================
+    # Annotate means: create a new column 'total_number_of_posts'
+    top_authors = User.objects.annotate(
+        total_number_of_posts=Count('posts')).order_by('total_number_of_posts')[0:3]
+    # It's posts because you added related_name to the model
+    # ==============================================================
+    # ==============================================================
+
+    context = {
+        'author_profile': author_profile,
+        'top_posts': top_posts,
+        'trending_posts': trending_posts,
+        'other_author_posts': other_author_posts,
+        'top_authors': top_authors,
+    }
+    return render(request, 'app/author.html', context)
+
+
+def search(request):
+    search_parameter = ''
+    searched_posts = Post.objects.all()
+    
+    if request.GET.get('q'):
+        search_parameter = request.GET.get('q')
+        
+        # aka find the search parameter in the title of all posts case insensitive.
+        searched_posts = Post.objects.filter(
+            Q(title__icontains=search_parameter) |
+            Q(tag__name__icontains=search_parameter)
+        ).distinct()
+        # Q is an imported stuff from django.db.models
+        # IT ALLOWS YOU TO PERFORM COMPLEX QUERY SEARCHES.
+    
+    context = {
+        'search_parameter': search_parameter,
+        'searched_posts': searched_posts
+    }
+    return (render(request, 'app/search.html', context))

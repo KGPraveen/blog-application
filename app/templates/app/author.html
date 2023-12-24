@@ -1,0 +1,189 @@
+{% extends "base.html" %}
+
+{% block title %}Author Page{% endblock title %}
+
+{% block content %}
+<main>
+    <div class="container">
+        <div class="layout">
+            <!-- left layout -->
+            <div class="left">
+                <div class="page-top">
+                    <div class="top flex">
+                        <div class="page-name">
+                            <a href="#" class="learn">
+                                <span class="material-icons"> keyboard_return </span> Go
+                                back
+                            </a>
+                            <h1>Author</h1>
+                        </div>
+                    </div>
+                </div>
+
+                <center>
+                    <div class="typo">
+                        <h1 class="title">{{author_profile.user.first_name}} {{author_profile.user.last_name}}</h1>
+                        <p>
+                            {{author_profile.bio}}
+                        </p>
+                    </div>
+                </center>
+                <section class="sp">
+                    <div class="container">
+                        <h1 class="sec-title">Top Posts</h1>
+                        <div class="grid-2 blog">
+
+                            <!-- card -->
+                            {% for post in top_posts %}
+                            <a href="#">
+                                <div class="card">
+                                    <div class="post-img">
+                                        <img src="{{post.image.url}}" alt="" />
+                                        <div class="tag">{{post.tag.all.0}}</div>
+                                    </div>
+                                    <div class="card-content">
+                                        <h3>
+                                            {{post.title}}
+                                        </h3>
+                                        <div class="author">
+                                            <div class="profile-pic">
+                                                <img src="{{post.author.profile.profile_picture.url}}" alt="" />
+                                            </div>
+                                            <div class="details">
+                                                <p>{{post.author.first_name}} {{post.author.last_name}}</p>
+                                                <small>{{post.date_created | date}}</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                            {% endfor %}
+                            <!-- card end-->
+                        </div>
+                    </div>
+                </section>
+                <section class="sp">
+                    <div class="container">
+                        <h1 class="sec-title">Trending</h1>
+                        <div class="grid-3 blog-grid">
+                            <!-- card -->
+                            {% for post in trending_posts %}
+                            <a href="#">
+                                <div class="card">
+                                    <div class="post-img">
+                                        <img src="{{post.image.url}}" alt="" />
+                                        <div class="tag">{{post.tag.all.0}}</div>
+                                    </div>
+                                    <div class="card-content">
+                                        <h3>
+                                            {{post.title}}
+                                        </h3>
+                                        <div class="author">
+                                            <div class="profile-pic">
+                                                <img src="{{post.author.profile.profile_picture.url}}" alt="" />
+                                            </div>
+                                            <div class="details">
+                                                <p>{{post.author.first_name}} {{post.author.last_name}}</p>
+                                                <small>{{post.date_created | date}}</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                            {% endfor %}
+                            <!-- card end-->
+                        </div>
+                        <center>
+                            <button class="btn btn-primary rounded view">
+                                View more
+                                <span class="material-icons"> trending_flat </span>
+                            </button>
+                        </center>
+                    </div>
+                </section>
+                <section class="sp">
+                    <div class="container">
+                        <h1 class="sec-title">Featueal</h1>
+                        <div class="grid-3 blog-grid">
+                            <!-- card -->
+                            <a href="#">
+                                <div class="card">
+                                    <div class="post-img">
+                                        <img src="../images/post.png" alt="" />
+                                        <div class="tag">Tag name</div>
+                                    </div>
+                                    <div class="card-content">
+                                        <h3>
+                                            A blog title and other stuffs will add here, also we
+                                            can include.
+                                        </h3>
+                                        <div class="author">
+                                            <div class="profile-pic">
+                                                <img src="../images/author.svg" alt="" />
+                                            </div>
+                                            <div class="details">
+                                                <p>Author name</p>
+                                                <small>June 20, 2022</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                            <!-- card end-->
+                        </div>
+                        <center>
+                            <button class="btn btn-primary rounded view">
+                                View more
+                                <span class="material-icons"> trending_flat </span>
+                            </button>
+                        </center>
+                    </div>
+                </section>
+            </div>
+            <!-- left layout end -->
+
+            <!-- right layout -->
+            <div class="right">
+
+                <div class="block">
+                    <h2 class="title2">Top Authors</h2>
+                    {% for author in top_authors %}
+                        <div class="recent-post other-author">
+                            <div class="rounded-img">
+                                <img src="{{author.profile.profile_picture.url}}" alt="" />
+                            </div>
+                            <div class="recent-content">
+                                <h3>
+                                    {{author.first_name}} {{author.last_name}}
+                                </h3>
+                                <a class="learn" href="author.">Learn more
+                                    <span class="material-icons"> trending_flat </span></a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                
+                <div class="block">
+                    <h2 class="title2">Other Authors</h2>
+                    {% for post in other_author_posts %}
+                        <div class="recent-post other-author">
+                            <div class="rounded-img">
+                                <img src="{{post.author.profile.profile_picture.url}}" alt="" />
+                            </div>
+                            <div class="recent-content">
+                                <h3>
+                                    {{post.title}}
+                                </h3>
+                                <a class="learn" href="#">Learn more
+                                    <span class="material-icons"> trending_flat </span></a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+               
+            </div>
+            <!-- right layout end -->
+        </div>
+    </div>
+</main>
+{% endblock content %}

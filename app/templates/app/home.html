@@ -8,10 +8,12 @@
     <div class="container">
         <center>
             <div class="search-bar">
-                <input type="text" placeholder="Search" />
-                <div class="animated-search" onclick="searchbar()">
-                    <i class="uil uil-search"></i>
-                </div>
+                <a href="{% url 'search_page' %}">
+                    <input type="text" placeholder="Search" />
+                    <div class="animated-search" onclick="searchbar()">
+                        <i class="uil uil-search"></i>
+                    </div>
+                </a>
             </div>
             <div class="typo">
                 <h1 class="title">Website blog title</h1>
@@ -28,7 +30,7 @@
                 </form>
                 <br>
                 {% if subscribe_successful %}
-                    <p>{{subscribe_successful}}</p>
+                <p>{{subscribe_successful}}</p>
                 {% endif %}
             </div>
         </center>
@@ -54,7 +56,8 @@
                 <p class="des">
                     {{featured_blog.content | truncatechars:200}}
                 </p>
-                <a class="learn" href="{% url 'post_page' featured_blog.slug %}">Learn more <span class="material-icons"> trending_flat </span></a>
+                <a class="learn" href="{% url 'post_page' featured_blog.slug %}">Learn more <span
+                        class="material-icons"> trending_flat </span></a>
             </div>
         </div>
     </div>
@@ -83,11 +86,11 @@
                         </h3>
                         <div class="author">
                             <div class="profile-pic">
-                                <img src="images/author.svg" alt="" />
+                                <img src="{{post.author.profile.profile_picture.url}}" alt="" />
                             </div>
                             <div class="details">
-                                <p>Author name</p>
-                                <small>{{post.date_modified | date}}</small>
+                                <p>{{post.author.profile.user.first_name}} {{post.author.profile.user.last_name}}</p>
+                                <small>{{post.date_created | date}}</small>
                             </div>
                         </div>
                     </div>
@@ -125,11 +128,11 @@
                         </h3>
                         <div class="author">
                             <div class="profile-pic">
-                                <img src="images/author.svg" alt="" />
+                                <img src="{{post.author.profile.profile_picture.url}}" alt="" />
                             </div>
                             <div class="details">
-                                <p>Author name</p>
-                                <small>{{post.date_modified | date}}</small>
+                                <p>{{post.author.profile.user.first_name}} {{post.author.profile.user.last_name}}</p>
+                                <small>{{post.date_created | date}}</small>
                             </div>
                         </div>
                     </div>
