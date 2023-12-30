@@ -54,41 +54,12 @@
                             </div>
                             <div class="blog-post-content">
                                 <p>
-                                    {{post.content}}
-                                </p>
-                                <br /><br />
-                                <p>
-                                    If you have invested time, energy and money on creating a
-                                    website for your business, you know very well that
-                                    nowadays virtually every company must have an online
-                                    presence. However, having a great website in place is not
-                                    a final goal that you can afford to tick and archive. A
-                                    website is never something static, and this is why you
-                                    should always keep up with change and continuously improve
-                                    it. It would help if you thought of your website as a
-                                    salesman who represents your company every day and keeps
-                                    an eye on what is happening in the field. Competitors will
-                                    adopt new strategies, as the needs of your existing and
-                                    potential customers evolve. Therefore, there are many good
-                                    reasons why you should invest periodically in re-adapting
-                                    your website’s content and functionality.
-                                </p>
-                                <br /><br />
-                                <p>
-                                    If you have invested time, energy and money on creating a
-                                    website for your business, you know very well that
-                                    nowadays virtually every company must have an online
-                                    presence. However, having a great website in place is not
-                                    a final goal that you can afford to tick and archive. A
-                                    website is never something static, and this is why you
-                                    should always keep up with change and continuously improve
-                                    it. It would help if you thought of your website as a
-                                    salesman who represents your company every day and keeps
-                                    an eye on what is happening in the field. Competitors will
-                                    adopt new strategies, as the needs of your existing and
-                                    potential customers evolve. Therefore, there are many good
-                                    reasons why you should invest periodically in re-adapting
-                                    your website’s content and functionality.
+                                    {% comment %}
+                                    The 'safe' pipe will make it so that the html tags or any unsafe commands in posts
+                                    are not used to hack into our page and any SAFE HTML tags are instead rendered into
+                                    our post.
+                                    {% endcomment %}
+                                    {{post.content | safe}}
                                 </p>
                                 <div class="blog-tags">
                                     {% for tag in post.tag.all %}

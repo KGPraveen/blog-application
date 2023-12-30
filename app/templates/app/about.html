@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}About Page{% endblock title %}
+{% block content %}
+    <main>
+        <main>
+            <div class="container">
+                <div class="page-top">
+                    <div class="top flex">
+                        <div class="page-name">
+                            <a href="" class="learn">
+                                <span class="material-icons"> keyboard_return </span> Go back
+                            </a>
+                            <h1>About</h1>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </main>
+        <section class="sp">
+            <div class="container">
+                {% if meta_data %}
+                    <p>{{meta_data.about}}</p>
+                {% else %}
+                    <p>Unfortunately, there is no About Page content available.</p>
+                    <p>I am sorry.</p>
+                {% endif %}
+            </div>
+        </section>
+
+
+
+
+    </main>
+{% endblock content %}

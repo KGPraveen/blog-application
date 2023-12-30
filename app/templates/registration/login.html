@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Login Page{% endblock title %}
+
+{% block content %}
+<main style="padding-top: 71px;">
+
+    <form action="/accounts/login/" method="post" class="form">
+        {% csrf_token %}
+        <center>
+            <div class="logo f-logo">
+                <i class="fa-brands fa-blogger"></i>
+            </div>
+            <div class="inputs">
+                <div>
+                    <div class="search-bar s-active input">
+                        {% comment %} The default html input tag works AS LONG AS
+                        name="username" or name="password", etc. {% endcomment %}
+                        <input type="text" placeholder="Username" name="username">
+                        <div class="animated-search">
+                            <i class="uil uil-envelope-alt"></i>
+                        </div>
+                    </div>
+                    <div class="search-bar s-active input">
+                        <input type="password" placeholder="Password" name="password">
+                        <div class="animated-search">
+                            <i class="uil uil-key-skeleton"></i>
+                        </div>
+                    </div>
+                </div>
+
+                {% comment %}
+                This non_field_error is for checking for all the
+                errors at once. That is to see if username is
+                valid, passwords match, etc. If not, then they are
+                shown as an error where you rendered it.
+                In this case, bottom of the input fields.
+                {% endcomment %}
+                {% if form.non_field_errors %}
+                    {% for error in form.non_field_errors %}
+                        <div class="field-error">
+                            <p>{{error}}</p>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                <button class="btn btn-primary rounded" type="submit">
+                    Login <span class="material-icons"> arrow_right_alt </span>
+                </button>
+                <p>Not have an account? <a href="{% url "register_user_page" %}">Sign up</a></p>
+            </div>
+        </center>
+    </form>
+</main>
+{% endblock content %}

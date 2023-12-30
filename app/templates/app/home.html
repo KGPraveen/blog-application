@@ -16,17 +16,28 @@
                 </a>
             </div>
             <div class="typo">
-                <h1 class="title">Website blog title</h1>
+                {% if meta_data %}
+                <h1 class="title">{{meta_data.title}}</h1>
                 <p>
-                    Lorem ipsum began as scrambled, nonsensical Latin derived from
-                    Cicero's 1st-century BC text De Finibus Bonorum et Malorum.
+                    {{meta_data.description}}
                 </p>
+                {% else %}
+                <h1 class="title">Oops, No Title available...</h1>
+                <p>
+                    Oops, no description available...
+                </p>
+                {% endif %}
             </div>
             <div class="newsletter">
                 <form method="POST">
-                    {% csrf_token %}
-                    {{subscribe_form.email}}
-                    <button class="btn btn-primary">Subscribe</button>
+                    {% if request.session.subscribed %}
+                        {% comment %} You could put a msg like "You are already subscribed" etc, here.  {% endcomment %}
+                        {% comment %} But remember that you will see it here immediately after subscribing. {% endcomment %}
+                    {% else %}
+                        {% csrf_token %}
+                        {{subscribe_form.email}}
+                        <button class="btn btn-primary">Subscribe</button>
+                    {% endif %}
                 </form>
                 <br>
                 {% if subscribe_successful %}

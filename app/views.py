@@ -1,16 +1,24 @@
 import secrets
+from django.contrib.auth import login
 from django.contrib.auth.models import User
 from django.db.models import Q, Count
 from django.http import HttpResponseRedirect
-from django.shortcuts import render
-from app.forms import CommentForm, SubscribeForm
-from app.models import Post, Comment, Profile, Tag
+from django.shortcuts import redirect, render
+from app.forms import RegisterUserForm, CommentForm, SubscribeForm
+from app.models import MetaData, Post, Comment, Profile, Tag
 from django.urls import reverse
 
 # Create your views here.
 
 
 def home(request):
+
+    if (MetaData.objects.all()):
+        meta_data = MetaData.objects.all()[0]
+    else:
+        meta_data = None
+
+    meta_data = MetaData.objects.all()[0]
     posts = Post.objects.all()
     recent_posts = posts.order_by('-date_created')[0:3]
     top_posts = posts.order_by('-view')[0:3]
@@ -26,6 +34,7 @@ def home(request):
         subscribe_form = SubscribeForm(request.POST)
         if (subscribe_form.is_valid()):
             subscribe_form.save()
+            request.session['subscribed'] = True
             subscribe_form = SubscribeForm()
             subscribe_successful = "Subscribed Successfully!"
 
@@ -36,6 +45,7 @@ def home(request):
         'top_posts': top_posts,
         'subscribe_successful': subscribe_successful,
         'featured_blog': featured_blog,
+        'meta_data': meta_data,
     }
     return render(request, 'app/home.html', context)
 
@@ -188,10 +198,10 @@ def author(request, slug):
 def search(request):
     search_parameter = ''
     searched_posts = Post.objects.all()
-    
+
     if request.GET.get('q'):
         search_parameter = request.GET.get('q')
-        
+
         # aka find the search parameter in the title of all posts case insensitive.
         searched_posts = Post.objects.filter(
             Q(title__icontains=search_parameter) |
@@ -199,9 +209,46 @@ def search(request):
         ).distinct()
         # Q is an imported stuff from django.db.models
         # IT ALLOWS YOU TO PERFORM COMPLEX QUERY SEARCHES.
-    
+
     context = {
         'search_parameter': search_parameter,
         'searched_posts': searched_posts
     }
     return (render(request, 'app/search.html', context))
+
+
+def about(request):
+    if (MetaData.objects.all()):
+        meta_data = MetaData.objects.all()[0]
+    else:
+        meta_data = None
+    context = {
+        'meta_data': meta_data
+    }
+    print(meta_data)
+    return render(request, 'app/about.html', context)
+
+
+def all_posts(request):
+    all_posts = Post.objects.all()
+    context = {
+        'all_posts': all_posts,
+    }
+    return render(request, 'app/all_posts.html', context)
+
+
+def register_user(request):
+    register_user_form = RegisterUserForm()
+    
+    if request.POST:
+        register_user_form = RegisterUserForm(request.POST)
+        
+        if register_user_form.is_valid():
+            new_user = register_user_form.save()
+            login(request, new_user)
+            return redirect('/')
+    
+    context = {
+        'register_user_form': register_user_form,
+    }
+    return render(request, 'registration/register_user.html', context)

@@ -4,6 +4,18 @@ from django.utils.text import slugify
 
 # Create your models here.
 
+
+class MetaData(models.Model):
+    title = models.CharField(max_length=200)
+    description = models.CharField(max_length=200)
+    about = models.TextField()
+    
+    def __str__(self):
+        return self.title
+    
+
+
+
 # =================================================================
 # post1.author.profile.profile_picture -> will automatically
 # give you the profile of the selected user.
