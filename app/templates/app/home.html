@@ -36,7 +36,7 @@
                     {% else %}
                         {% csrf_token %}
                         {{subscribe_form.email}}
-                        <button class="btn btn-primary">Subscribe</button>
+                        <button type="submit" class="btn btn-primary">Subscribe</button>
                     {% endif %}
                 </form>
                 <br>
@@ -65,7 +65,7 @@
                     {{featured_blog.title}}
                 </h1>
                 <p class="des">
-                    {{featured_blog.content | truncatechars:200}}
+                    {{featured_blog.content | truncatechars:200 | safe}}
                 </p>
                 <a class="learn" href="{% url 'post_page' featured_blog.slug %}">Learn more <span
                         class="material-icons"> trending_flat </span></a>
@@ -112,7 +112,7 @@
 
         </div>
         <center>
-            <a href=""><button class="btn btn-primary rounded view">
+            <a href="{% url 'all_top_posts_page' %}"><button class="btn btn-primary rounded view">
                     View more <span class="material-icons"> trending_flat </span>
                 </button></a>
         </center>
@@ -154,7 +154,7 @@
 
         </div>
         <center>
-            <a href=""><button class="btn btn-primary rounded view">
+            <a href="{% url 'all_new_posts_page' %}"><button class="btn btn-primary rounded view">
                     View more <span class="material-icons"> trending_flat </span>
                 </button></a>
         </center>

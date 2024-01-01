@@ -1,7 +1,8 @@
 {% extends "base.html" %}
-{% block title %}About Page{% endblock title %}
+{% block title %}All Posts{% endblock title %}
+
 {% block content %}
-    <main>
+    <main style="padding-top: 70px;">
         <main>
             <div class="container">
                 <div class="page-top">
@@ -10,26 +11,22 @@
                             <a href="{{request.META.HTTP_REFERER}}" class="learn">
                                 <span class="material-icons"> keyboard_return </span> Go back
                             </a>
-                            <h1>About</h1>
+                            <h1>All New Posts</h1>
                         </div>
-
                     </div>
                 </div>
             </div>
         </main>
         <section class="sp">
             <div class="container">
-                {% if meta_data %}
-                    <p>{{meta_data.about | safe}}</p>
-                {% else %}
-                    <p>Unfortunately, there is no About Page content available.</p>
-                    <p>I am sorry.</p>
-                {% endif %}
+                <div class="blog-tags">
+                    {% for post in all_new_posts %}
+                        <p class="tag">
+                            <a style="color: white;" href="{% url 'post_page' post.slug %}">{{post.title}}</a>
+                        </p>
+                    {% endfor %}
+                </div>
             </div>
         </section>
-
-
-
-
     </main>
 {% endblock content %}

@@ -8,7 +8,13 @@ from app.models import Comment, Subscribe
 class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
-        fields = ('content', 'name', 'email', 'website')
+        fields = ('content', 'email', 'website')
+        
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['content'].widget.attrs['placeholder'] = 'You comment here'
+        self.fields['email'].widget.attrs['placeholder'] = 'Your Email'
+        self.fields['website'].widget.attrs['placeholder'] = 'Your Website (optional)'
 
 
 class SubscribeForm(forms.ModelForm):

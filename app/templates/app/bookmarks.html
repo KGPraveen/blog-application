@@ -9,7 +9,7 @@
           <a href="{{request.META.HTTP_REFERER}}" class="learn">
             <span class="material-icons"> keyboard_return </span> Go back
           </a>
-          <h1>Search</h1>
+          <h1>All Bookmarks</h1>
         </div>
         <form method="get">
           <div class="search-bar s-active">
@@ -33,30 +33,38 @@
   <div class="container">
     <div class="grid">
       <!-- card -->
-      {% for post in searched_posts %}
-      <a href="{% url 'post_page' post.slug %}">
-        <div class="card">
-          <div class="post-img">
-            <img src="{{post.image.url}}" alt="" />
-            <div class="tag">{{post.tag.all.0}}</div>
-          </div>
-          <div class="card-content">
-            <h3>
-              {{post.title}}
-            </h3>
-            <div class="author">
-              <div class="profile-pic">
-                <img src="{{post.author.profile.profile_picture.url}}" alt="" />
-              </div>
-              <div class="details">
-                <p>{{post.author.first_name}} {{post.author.last_name}}</p>
-                <small>{{post.date_Created | date}}</small>
-              </div>
+    {% if searched_posts %}
+        {% for post in searched_posts %}
+        <a href="{% url 'post_page' post.slug %}">
+            <div class="card">
+            <div class="post-img">
+                <img src="{{post.image.url}}" alt="" />
+                <div class="tag">{{post.tag.all.0}}</div>
             </div>
-          </div>
-        </div>
-      </a>
-      {% endfor %}
+            <div class="card-content">
+                <h3>
+                {{post.title}}
+                </h3>
+                <div class="author">
+                <div class="profile-pic">
+                    <img src="{{post.author.profile.profile_picture.url}}" alt="" />
+                </div>
+                <div class="details">
+                    <p>{{post.author.first_name}} {{post.author.last_name}}</p>
+                    <small>{{post.date_Created | date}}</small>
+                </div>
+                </div>
+            </div>
+            </div>
+        </a>
+        {% endfor %}
+    {% else %}
+        {% if user.is_authenticated %}
+        <p style="font-size: 2rem; width: 600px;">You have not bookmarked any posts yet.</p>
+        {% else %}
+        <p style="font-size: 2rem;">Please login to check if there are any posts you have bookmarked.</p>
+        {% endif %}
+    {% endif %}
       <!-- card end-->
     </div>
   </div>

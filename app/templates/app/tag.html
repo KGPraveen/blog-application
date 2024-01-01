@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
-{% block title %}Blog|{{tag}}{% endblock title %}
+{% block title %}Tag | {{tag}}{% endblock title %}
 
 {% block content %}
 <main>
@@ -11,7 +11,7 @@
                 <div class="page-top">
                     <div class="top flex">
                         <div class="page-name">
-                            <a href="#" class="learn">
+                            <a href="{{request.META.HTTP_REFERER}}" class="learn">
                                 <span class="material-icons"> keyboard_return </span>
                                 Go back
                             </a>
@@ -46,10 +46,10 @@
                                         </h3>
                                         <div class="author">
                                             <div class="profile-pic">
-                                                <img src="../images/author.svg" alt="" />
+                                                <img src="{{post.author.profile.profile_picture.url}}" alt="" />
                                             </div>
                                             <div class="details">
-                                                <p>Author name</p>
+                                                <p>{{post.author.first_name}} {{post.author.last_name}}</p>
                                                 <small>{{post.date_created | date}}</small>
                                             </div>
                                         </div>
@@ -65,7 +65,7 @@
                 {% comment %} TRENDING {% endcomment %}
                 <section class="sp">
                     <div class="container">
-                        <h1 class="sec-title">Trending</h1>
+                        <h1 class="sec-title">All Posts</h1>
                         <div class="grid-3 blog-grid">
                             <!-- card -->
                             {% for post in trending_posts %}
@@ -81,10 +81,10 @@
                                         </h3>
                                         <div class="author">
                                             <div class="profile-pic">
-                                                <img src="../images/author.svg" alt="" />
+                                                <img src="{{post.author.profile.profile_picture.url}}" alt="" />
                                             </div>
                                             <div class="details">
-                                                <p>Author name</p>
+                                                <p>{{post.author.first_name}} {{post.author.last_name}}</p>
                                                 <small>{{post.date_created | date}}</small>
                                             </div>
                                         </div>
@@ -95,14 +95,17 @@
                             <!-- card end-->
                         </div>
                         <center>
-                            <button class="btn btn-primary rounded view">
-                                View more
-                                <span class="material-icons"> trending_flat </span>
-                            </button>
+                            <form action="{% url 'search_page' %}">
+                                <input type="hidden" name="q" value="{{tag.name}}">
+                                <button class="btn btn-primary rounded view">
+                                    View more
+                                    <span class="material-icons"> trending_flat </span>
+                                </button>
+                            </form>
                         </center>
                     </div>
                 </section>
-                <section class="sp">
+                {% comment %} <section class="sp">
                     <div class="container">
                         <h1 class="sec-title">Featueal</h1>
                         <div class="grid-3 blog-grid">
@@ -139,7 +142,7 @@
                             </button>
                         </center>
                     </div>
-                </section>
+                </section> {% endcomment %}
             </div>
             <!-- left layout end -->
 
@@ -155,22 +158,6 @@
                         {% endfor %}
                     </div>
                 </div>
-                {% comment %} <div class="block">
-                    <h2 class="title2">Other Tags</h2>
-                    <div class="blog-tags">
-                        <div class="tag">Tag</div>
-                        <div class="tag">Tag content</div>
-                        <div class="tag">Tag</div>
-                        <div class="tag">Tag content</div>
-                        <div class="tag">Tag content</div>
-                        <div class="tag">Tag</div>
-                        <div class="tag">Tag content</div>
-                        <div class="tag">Tag content</div>
-                        <div class="tag">Tag</div>
-                        <div class="tag">Tag content</div>
-                        <div class="tag">Tag</div>
-                    </div>
-                </div> {% endcomment %}
             </div>
             <!-- right layout end -->
         </div>

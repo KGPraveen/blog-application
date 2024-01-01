@@ -26,21 +26,50 @@
                         <div class="timeline">
                             <div class="track">
                                 <i class="uil uil-clock"></i>
-                                <p class="time">{{post.date_modified}}</p>
+                                <p class="time">{{post.date_created}}</p>
                             </div>
                             <div class="track">
                                 <i class="uil uil-users-alt"></i>
                                 <p class="view-count">{{post.view}} views</p>
                             </div>
                             <div class="track">
-                                <form action="" method="POST">
+
+                                {% comment %}
+                                By putting the action attribute as bookmark_page_url, we get the form
+                                contents there in that url, and therefore, the view associated with it
+                                which is def bookmark_post through its request.
+                                {% endcomment %}
+                                {% if user.is_authenticated %}
+                                <form action="{% url 'bookmark_post_page' post.slug %}" method="POST">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="post_id" value={{post.id}}>
+
+                                    {% comment %}
+                                    aka showing bookmark or remove bookmark based on is_bookmarked
+                                    {% endcomment %}
+                                    {% if is_bookmarked %}
+                                    <button type="submit" class="btn btn-info">
+                                        <i class="fa-solid fa-bookmark"></i>
+                                        <p class="bookmark">Remove Bookmark</p>
+                                    </button>
+                                    {% else %}
                                     <button type="submit" class="btn btn-info">
                                         <i class="uil uil-bookmark-full"></i>
                                         <p class="bookmark">Bookmark</p>
                                         <!-- REMOVE BOOKMARK
-                      <i class="fa-solid fa-bookmark"></i> -->
+                                                <i class="fa-solid fa-bookmark"></i> -->
                                     </button>
+                                    {% endif %}
                                 </form>
+                                {% else %}
+                                <a href="{% url 'login' %}">
+                                    <input type="hidden" name="post_id" value={{post.id}}>
+                                    <button type="submit" class="btn btn-info">
+                                        <i class="uil uil-bookmark-full"></i>
+                                        <p class="bookmark">Login to Bookmark</p>
+                                    </button>
+                                </a>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
@@ -63,19 +92,34 @@
                                 </p>
                                 <div class="blog-tags">
                                     {% for tag in post.tag.all %}
-                                        <a href="{% url 'tag_page' tag.slug %}">
-                                            <div class="tag">{{tag.name}}</div>
-                                        </a>
+                                    <a href="{% url 'tag_page' tag.slug %}">
+                                        <div class="tag">{{tag.name}}</div>
+                                    </a>
                                     {% endfor %}
                                 </div>
                                 <div class="social-share">
                                     <div class="reactions">
-                                        <div class="likes">
-                                            <i class="uil uil-heart"></i> <span>200</span>
+                                        <div class="likes" style="cursor: default !important">
+                                            <form action="{% url 'liked_post_page' post.slug %}" method="post">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="post_id" value={{post.id}}>
+
+                                                {% if post_is_liked %}
+                                                    <button type="submit">
+                                                        <i class="fa-solid fa-heart"></i>
+                                                    </button>
+                                                    <span>{{total_post_likes}}</span>
+                                                {% else %}
+                                                    <button type="submit">
+                                                        <i class="uil uil-heart"></i>
+                                                    </button>
+                                                    <span>{{total_post_likes}}</span>
+                                                {% endif %}
+                                            </form>
                                         </div>
-                                        <div class="total-comments">
+                                        <div class="total-comments" style="cursor: default !important">
                                             <i class="uil uil-comment-alt"></i>
-                                            <span>10</span>
+                                            <span>{{comments_count}}</span>
                                         </div>
                                     </div>
                                     <div class="share">
@@ -96,107 +140,115 @@
                                     </div>
                                 </div>
                                 <!-- comments -->
-                                {% for comment in comments %}
-                                    <div class="user-comment">
-                                        <div class="author">
-                                            <div class="profile-pic">
-                                                <img src="{% static "app/images/author.svg" %}" alt="" />
-                                            </div>
-                                            <div class="details">
-                                                <p>{{comment.name}}</p>
-                                                <small>{{comment.date | date}}</small>
-                                            </div>
+                            {% for comment in comments %}
+                                <div class="user-comment">
+                                    <div class="author">
+                                        <div class="profile-pic">
+                                            <img src="{{comment.author.profile.profile_picture.url}}" alt="" />
                                         </div>
-                                        <div class="comment-sec-main">
-                                            <div class="comment-sec">
-                                                <div class="comment">
-                                                    <p>
-                                                        {{comment.content}}
-                                                    </p>
-                                                </div>
-                                                <div class="reply">
-                                                    <button onclick="toggleDiv(this)">Reply</button>
-                                                </div>
-                                                <div class="comment-box" id="comment-reply-box">
-                                                    <h3>Reply to post</h3>
-                                                    <p>
-                                                        Your email address will not be published. Required fields
-                                                        are marked<span>*</span>
-                                                    </p>
-                                                    <form method="POST">
-                                                        {% csrf_token %}
-                                                        <!-- ============================================================ -->
-                                                        <!-- post works because we define it in context in views.py -->
-                                                        <input type="hidden" name="post" value="{{post.id}}">
-                                                        <!-- ============================================================ -->
-                                                        <!-- comment.id works because this form is within the for loop: -->
-                                                        <input type="hidden" name="parent_id" value="{{comment.id}}">
-                                                        <!-- ============================================================ -->
-
-                                                        {{comment_form.content}}
-                                                        <div class="grid-3">
-                                                            {{comment_form.name}}
-                                                            {{comment_form.email}}
-                                                            {{comment_form.website}}
-                                                        </div>
-                                                        <button type="submit" class="btn btn-primary rounded">
-                                                            Post Reply
-                                                        </button>
-                                                    </form>
-                                                </div>
-                                            </div>
-
-                                            
-                                            <!--=============REPLY BOXES============-->
-                                            {% for reply in comment.replies.all %}
-                                                <div class="public-reply">
-                                                    <div class="author">
-                                                        <div class="profile-pic">
-                                                            <img src="{% static "app/images/author.svg" %}" alt="" />
-                                                        </div>
-                                                        <div class="details">
-                                                            <p>{{reply.name}}</p>
-                                                            <small>{{reply.date | date}}</small>
-                                                        </div>
-                                                    </div>
-                                                    <div class="comment">
-                                                        <p>
-                                                            {{reply.content}}
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                            {% endfor %}
-                                            <!--====================================-->
+                                        <div class="details">
+                                            <p>{{comment.author.first_name}} {{comment.author.last_name}}</p>
+                                            <small>{{comment.date | date}}</small>
                                         </div>
                                     </div>
-                                {% endfor %}
+                                    <div class="comment-sec-main">
+                                        <div class="comment-sec">
+                                            <div class="comment">
+                                                <p>
+                                                    {{comment.content}}
+                                                </p>
+                                            </div>
+                                            <div class="reply">
+                                                {% if user.is_authenticated %}
+                                                    <button onclick="toggleDiv(this)" style="cursor: pointer;">Reply</button>
+                                                {% else %}
+                                                    <button>Login to Reply</button>
+                                                {% endif %}
+                                            </div>
+                                            <div class="comment-box" id="comment-reply-box">
+                                                <h3>Reply to post</h3>
+                                                <p>
+                                                    Your email address will not be published.
+                                                </p>
+                                                <form method="POST">
+                                                    {% csrf_token %}
+                                                    <!-- ============================================================ -->
+                                                    <!-- post works because we define it in context in views.py -->
+                                                    <input type="hidden" name="post" value="{{post.id}}">
+                                                    <!-- ============================================================ -->
+                                                    <!-- comment.id works because this form is within the for loop: -->
+                                                    <input type="hidden" name="parent_id" value="{{comment.id}}">
+                                                    <!-- ============================================================ -->
+
+                                                    {{comment_form.content}}
+                                                    <div class="grid-3">
+                                                        {{comment_form.name}}
+                                                        {{comment_form.email}}
+                                                        {{comment_form.website}}
+                                                    </div>
+                                                    <button type="submit" class="btn btn-primary rounded">
+                                                        Post Reply
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+
+
+                                        <!--=============REPLY BOXES============-->
+                                        {% for reply in comment.replies.all %}
+                                        <div class="public-reply">
+                                            <div class="author">
+                                                <div class="profile-pic">
+                                                    <img src="{{reply.author.profile.profile_picture.url}}" alt="" />
+                                                </div>
+                                                <div class="details">
+                                                    <p>{{reply.author.first_name}} {{reply.author.last_name}}</p>
+                                                    <small>{{reply.date | date}}</small>
+                                                </div>
+                                            </div>
+                                            <div class="comment">
+                                                <p>
+                                                    {{reply.content}}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                        <!--====================================-->
+                                    </div>
+                                </div>
+                            {% endfor %}
                             </div>
                         </div>
                         <div class="comment-box">
-                            <h3>Leave a new comment to this post</h3>
-                            <p>
-                                Your email address will not be published. Required fields
-                                are marked<span>*</span>
-                            </p>
-                            <form method="POST">
-                                {% csrf_token %}
-                                {{comment_form.content}}
-                                {% comment %} <textarea placeholder="Type your comment...."></textarea> {% endcomment %}
-                                <div class="grid-3">
-                                    {{comment_form.name}}
-                                    {% comment %} <input type="text" placeholder="Name" /> {% endcomment %}
-                                    {{comment_form.email}}
-                                    {% comment %} <input type="temail" placeholder="Email" /> {% endcomment %}
-                                    {{comment_form.website}}
-                                    {% comment %} <input type="url" placeholder="Website (optional)" /> {% endcomment %}
-                                    
-                                    {% comment %} Adding this below input to get the post id easily in views.py {% endcomment %}
-                                    <input type="hidden" name="post_id" value="{{post.id}}">
-                                </div>
-                                <button class="btn btn-primary rounded">
-                                    Post comment
-                                </button>
-                            </form>
+
+                            {% if user.is_authenticated %}
+                                <h3>Leave a new comment to this post</h3>
+                                <p>
+                                    Your email address will not be published.
+                                </p>
+                                <form method="POST">
+                                    <input type="hidden" name="user_id" value={{request.user}}>
+                                    {% csrf_token %}
+                                    {{comment_form.content}}
+                                    {% comment %} <textarea placeholder="Type your comment...."></textarea> {% endcomment %}
+                                    <div class="grid-3">
+                                        {{comment_form.name}}
+                                        {% comment %} <input type="text" placeholder="Name" /> {% endcomment %}
+                                        {{comment_form.email}}
+                                        {% comment %} <input type="temail" placeholder="Email" /> {% endcomment %}
+                                        {{comment_form.website}}
+                                        {% comment %} <input type="url" placeholder="Website (optional)" /> {% endcomment %}
+
+                                        {% comment %} Adding this below input to get the post id easily in views.py {%endcomment %}
+                                        <input type="hidden" name="post_id" value="{{post.id}}">
+                                    </div>
+                                    <button class="btn btn-primary rounded">
+                                        Post comment
+                                    </button>
+                                </form>
+                            {% else %}
+                                <p>Please Login to Leave comments.</p>
+                            {% endif %}
                         </div>
                     </div>
                 </section>
@@ -207,154 +259,76 @@
             <div class="right">
                 <div class="block">
                     <h2 class="title2">Most recent</h2>
-                    <div class="recent-post">
-                        <div class="rounded-img">
-                            <img src="../images/post.png" alt="" />
+                    {% for post in most_recent_posts %}
+                        <div class="recent-post">
+                            <div class="rounded-img">
+                                <img src="{{post.image.url}}" alt="" />
+                            </div>
+                            <div class="recent-content">
+                                <h3>
+                                    {{post.title}}
+                                </h3>
+                                <a class="learn" href="{% url 'post_page' post.slug %}">Learn more
+                                    <span class="material-icons"> trending_flat </span></a>
+                            </div>
                         </div>
-                        <div class="recent-content">
-                            <h3>
-                                A blog title and other stuffs will add here, also we can
-                                incluse.
-                            </h3>
-                            <a class="learn" href="#">Learn more
-                                <span class="material-icons"> trending_flat </span></a>
-                        </div>
-                    </div>
-                    <div class="recent-post">
-                        <div class="rounded-img">
-                            <img src="../images/post.png" alt="" />
-                        </div>
-                        <div class="recent-content">
-                            <h3>
-                                A blog title and other stuffs will add here, also we can
-                                incluse.
-                            </h3>
-                            <a class="learn" href="#">Learn more
-                                <span class="material-icons"> trending_flat </span></a>
-                        </div>
-                    </div>
-                    <div class="recent-post">
-                        <div class="rounded-img">
-                            <img src="../images/post.png" alt="" />
-                        </div>
-                        <div class="recent-content">
-                            <h3>
-                                A blog title and other stuffs will add here, also we can
-                                incluse.
-                            </h3>
-                            <a class="learn" href="#">Learn more
-                                <span class="material-icons"> trending_flat </span></a>
-                        </div>
-                    </div>
+                    {% endfor %}
                 </div>
 
                 <div class="block r-blog">
                     <h2 class="title2">Related Blogs</h2>
                     <!-- card -->
-                    <a href="#">
-                        <div class="card">
-                            <div class="post-img">
-                                <img src="../images/post.png" alt="" />
-                                <div class="tag">Tag name</div>
-                            </div>
-                            <div class="card-content">
-                                <h3>
-                                    A blog title and other stuffs will add here, also we can
-                                    include.
-                                </h3>
-                                <div class="author">
-                                    <div class="profile-pic">
-                                        <img src="../images/author.svg" alt="" />
-                                    </div>
-                                    <div class="details">
-                                        <p>Author name</p>
-                                        <small>June 20, 2022</small>
+                    {% for post in related_posts %}
+                        <a href="{% url 'post_page' post.slug %}">
+                            <div class="card">
+                                <div class="post-img">
+                                    <img src="{{post.image.url}}" alt="" />
+                                    <div class="tag">{{post.tag.all.0}}</div>
+                                </div>
+                                <div class="card-content">
+                                    <h3>
+                                        {{post.title}}
+                                    </h3>
+                                    <div class="author">
+                                        <div class="profile-pic">
+                                            <img src="{{post.author.profile.profile_picture.url}}" alt="" />
+                                        </div>
+                                        <div class="details">
+                                            <p>{{post.author.first_name}} {{post.author.last_name}}</p>
+                                            <small>{{post.date_created}}</small>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </a>
-                    <!-- card end-->
-
-                    <!-- card -->
-                    <a href="#">
-                        <div class="card">
-                            <div class="post-img">
-                                <img src="../images/post.png" alt="" />
-                                <div class="tag">Tag name</div>
-                            </div>
-                            <div class="card-content">
-                                <h3>
-                                    A blog title and other stuffs will add here, also we can
-                                    include.
-                                </h3>
-                                <div class="author">
-                                    <div class="profile-pic">
-                                        <img src="../images/author.svg" alt="" />
-                                    </div>
-                                    <div class="details">
-                                        <p>Author name</p>
-                                        <small>June 20, 2022</small>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
+                        </a>
+                    {% endfor %}
                     <!-- card end-->
                 </div>
                 <div class="block">
-                    <h2 class="title2">Top category</h2>
-                    <div class="card">
-                        <h3>
-                            A blog title and other stuffs will add here, lso we can
-                            incluse.
-                        </h3>
-                        <p>
-                            Lorem ipsum began as scrambled, nonsensical Latin derived from
-                            Cicero's 1st-century BC text De Finibus Bonorum et Malorum.
-                        </p>
-                        <a class="learn" href="#">Learn more
-                            <span class="material-icons"> trending_flat </span></a>
-                    </div>
-                    <div class="card">
-                        <h3>
-                            A blog title and other stuffs will add here, lso we can
-                            incluse.
-                        </h3>
-                        <p>
-                            Lorem ipsum began as scrambled, nonsensical Latin derived from
-                            Cicero's 1st-century BC text De Finibus Bonorum et Malorum.
-                        </p>
-                        <a class="learn" href="#">Learn more
-                            <span class="material-icons"> trending_flat </span></a>
-                    </div>
-                    <div class="card">
-                        <h3>
-                            A blog title and other stuffs will add here, lso we can
-                            incluse.
-                        </h3>
-                        <p>
-                            Lorem ipsum began as scrambled, nonsensical Latin derived from
-                            Cicero's 1st-century BC text De Finibus Bonorum et Malorum.
-                        </p>
-                        <a class="learn" href="#">Learn more
-                            <span class="material-icons"> trending_flat </span></a>
-                    </div>
+                    <h2 class="title2">Top Authors</h2>
+                    {% for author in top_authors %}
+                        <div class="recent-post other-author">
+                            <div class="rounded-img">
+                                <img src="{{author.profile.profile_picture.url}}" alt="" />
+                            </div>
+                            <div class="recent-content">
+                                <h3>
+                                    {{author.first_name}} {{author.last_name}}
+                                </h3>
+                                <a class="learn" href="{% url 'author_page' author.profile.slug %}">Learn more
+                                    <span class="material-icons"> trending_flat </span></a>
+                            </div>
+                        </div>
+                    {% endfor %}
                 </div>
                 <div class="block">
                     <h2 class="title2">Top Tags</h2>
                     <div class="blog-tags">
-                        <div class="tag">Tag</div>
-                        <div class="tag">Tag content</div>
-                        <div class="tag">Tag</div>
-                        <div class="tag">Tag content</div>
-                        <div class="tag">Tag content</div>
-                        <div class="tag">Tag</div>
-                        <div class="tag">Tag content</div>
-                        <div class="tag">Tag content</div>
-                        <div class="tag">Tag</div>
-                        <div class="tag">Tag content</div>
-                        <div class="tag">Tag</div>
+                        {% for tag in top_tags %}
+                            <a href="{% url 'tag_page' tag.slug %}">
+                                <div class="tag">{{tag.name}}</div>
+                            </a>
+                        {% endfor %}
                     </div>
                 </div>
             </div>

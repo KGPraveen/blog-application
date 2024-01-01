@@ -3,6 +3,14 @@
 
 {% block content %}
 <main style="padding-top: 71px;">
+    <div class="container">
+        <div class="page-name">
+            <a href="#" class="learn">
+                <span class="material-icons"> keyboard_return </span> Go back
+            </a>
+            <h1>Login</h1>
+        </div>
+    </div>
 
     <form action="/accounts/login/" method="post" class="form">
         {% csrf_token %}
