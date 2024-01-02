@@ -21,4 +21,6 @@ How to Use:
    blog application.
 7. If it asks for any additional packages, install them using
    the commands the terminal gives you.
-8. If you encounter any errors, please let me know.
+8. Or you can directly install the packages mentioned in the
+   requirements.txt file.
+9. If you encounter any errors, please let me know.
